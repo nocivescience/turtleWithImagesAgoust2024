@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"
+      integrity="sha512-0zGLOFv/+OQ6YfVCSGDQWhrDRx0ONmBqWvs3gI4olm8i6xtKoG1FhEnB4eTaWCVnojyfUDgE8Izeln+mAJAkFA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script>
+        //Day in Life game: a sea turtle's hunting course.
+        let x = 0;
+        let y = 0;
+        let easing = 0.03;
+        let preyColor
+        let trapX1
+        let trapY1
+        let trapX2
+        let trapY2
+        let trapX3
+        let trapY3
+        let trashImg
+        function preload() {
+            img1 = loadImage("images/plastic0.jpg");
+            img2 = loadImage("images/plastic1.jpg");
+            img3 = loadImage("images/plastic2.jpg");
+        }
+        function setup() {
+            createCanvas(400, 400);
+            //default color for prey
+            preyColor = color(274, 199, 169);
+            //determine the anchor points for the 3 traps on screen
+            trapX1 = width / 6;
+            trapY1 = random(0, height);
+            trapX2 = width / 2
+            trapY2 = random(0, height);
+            trapX3 = (width / 6) * 5
+            trapY3 = random(0, height);
+            imageMode(CENTER);
+        }
+
+        function draw() {
+            //gradient oceanic background
+            c1 = color(0, 196, 204);
+            c2 = color(3, 103, 166);
+            setGradient(c1, c2);
+
+            // draw 3 invisible ellipses for traps, if turtle comes into the boundary of either, trash will spam randomly on canvas
+            noStroke();
+            noFill();
+            ellipse(trapX1, trapY1, 110);
+            ellipse(trapX2, trapY2, 110);
+            ellipse(trapX3, trapY3, 110);
+            // check if turtle is in the boundary of either trap
+            let d1 = dist(mouseX, mouseY, trapX1, trapY1);
+            let d2 = dist(mouseX, mouseY, trapX2, trapY2);
+            let d3 = dist(mouseX, mouseY, trapX3, trapY3);
+            if (d1 < 55) {
+                image(img1, mouseX, mouseY, 160, 140);
+            }
+            if (d2 < 55) {
+                image(img2, mouseX, mouseY, 160, 130);
+            }
+            if (d3 < 55) {
+                image(img3, mouseX, mouseY, 160, 160);
+            }
+            // draw a turtle 
+            let targetX = mouseX;
+            let targetY = mouseY;
+
+            //draw a prey at cursor
+            let weight = dist(mouseX, mouseY, pmouseX, pmouseY);
+            strokeWeight(weight);
+            stroke(preyColor);
+            line(mouseX, mouseY, pmouseX, pmouseY);
+
+            //move turtle with cursor
+            translate(x, y);
+
+            //orient the turtle to the cursor
+            let posX = width / 2;
+            let posY = height / 2;
+            let angle = Math.atan2(mouseY - posY, mouseX - posX);
+            rotate(angle - radians(-60));
+            //create the swimming effect by easing
+            x += (targetX - x) * easing;
+            y += (targetY - y) * easing;
+            //draw turtle
+            //small ellipse for head
+            fill(46, 252, 35);
+            stroke(51);
+            strokeWeight(2);
+            strokeCap(ROUND);
+            ellipse(0, 0, 20, 25);
+            //A polygon underneath the shell represents legs 
+            push();
+            translate(0, 35);
+            rotate(15);
+            beginShape();
+            vertex(-10, 10);
+            vertex(0, 40);
+            vertex(10, 10);
+            vertex(35, 0);
+            vertex(10, -8);
+            vertex(0, -35);
+            vertex(-10, -8);
+            vertex(-40, 0);
+            endShape(CLOSE);
+            pop();
+            //one triangle tail
+            triangle(-5, 55, 3, 55, -4, 70);
+
+            //big ellipse for back
+            fill(210, 105, 30);
+            ellipse(0, 30, 40, 50);
+            //the shape on the back
+            stroke(139, 69, 19);
+            beginShape();
+            vertex(0, 15);
+            vertex(10, 25);
+            vertex(10, 35);
+            vertex(0, 45);
+            vertex(-10, 35);
+            vertex(-10, 25);
+            endShape(CLOSE);
+            line(0, 15, 0, 6);
+            line(10, 25, 17, 19);
+            line(10, 35, 17, 41);
+            line(0, 45, 0, 54);
+            line(-10, 35, -17, 41);
+            line(-10, 25, -17, 19);
+
+        }
+
+        //press the mouse will change prey to random color
+        function mousePressed() {
+            preyColor = color(random(255), random(255), random(255));
+            trapX1 = width / 6;
+            trapY1 = random(0, height);
+            trapX2 = width / 2
+            trapY2 = random(0, height);
+            trapX3 = (width / 6) * 5
+            trapY3 = random(0, height);
+        }
+
+        //credit: function below is borrowed from https://editor.p5js.org/REAS/sketches/S1TNUPzim
+        function setGradient(c1, c2) {
+            // noprotect
+            noFill();
+            for (var y = 0; y < height; y++) {
+                var inter = map(y, 0, height, 0, 1);
+                var c = lerpColor(c1, c2, inter);
+                stroke(c);
+                line(0, y, width, y);
+            }
+        }
+        // 
+    </script>
+</body>
+
+</html>
